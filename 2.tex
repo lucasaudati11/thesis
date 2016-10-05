@@ -1,0 +1,247 @@
+\documentclass{article}
+\usepackage{amsmath,amsfonts,amssymb,graphicx,color,float}
+\usepackage{subfig}
+\begin{document}
+For a thorough discussion of the effects that a general filter has on a time series, a valuable diagnostic is the frequency response of the that filter. The latter consists in the Fourier transform of the filter factors.\\This chapter introduces the Fourier transform, considering its properties and the reasons why it is important for time series analysis. Afterwards, the design of the proposed filter is analyzed, explaining its advantages for seasonal adjustment of historical data. At last, the utility of a tool such as the periodogram is discussed.
+\section{The Fourier transform}
+Fourier transform is one of the most useful mathematical tools in modern science, with multiple applications in physics and engineering, or in general when considering any signal. The formula has been proposed by Jean Baptiste Fourier in 1822 in its work \textit{`Thèorie analytique de la chaleur'”}, in order to resolve differential equations regarding heat conduction. In his work Fourier stated that every waveform (a real periodic function) could be represented as a sum of simple sinusoids of different frequencies, meant as sum of a trigonometric series. This is why now we refer to trigonometric series also as Fourier series. His idea was disputed by that time by well-known French mathematics such as Laplace and Lagrange, but this tool is now crucial in all the fields of modern science. The knowledge of that time couldn't agree specially with the new idea that a discontinuous function can be represented as a sum of infinite continuous sinusoidal functions. Indeed, Fourier transform permits to decompose a signal (or a function) into the sum of sinusoidal functions. In other words, it makes possible to write a function of time as a complex-valued function of frequency, through the application of an integral transform. The theory is strictly related to the Fourier series, which function is a way to decompose a periodic function as the sum of simple sine waves, each with its own frequency and amplitude.\\A function is called periodic, with fundamental period $P$, if:
+\begin{equation}
+f(t+P)=f(t) \quad \forall t 
+\end{equation}
+P is then the period of the function; it is possible to describe it by:
+\begin{equation}
+P=\frac{2\pi}{\omega}
+\end{equation}
+Where $\omega$ is the frequency, obviously related to the period P as follows::
+\begin{equation}
+\omega=\frac{2\pi}{P}
+\end{equation}
+Note that the same periodic function with period $P$ will be periodic also with period $2P$, so the fundamental period is the smallest $P$ for which equation (1) is true. Obviously, any linear combination of a periodic function with period $P$ is a periodic function with the same period $P$.\\Speaking about trigonometric series, it is essential to refer to the space $L^2[-\pi,\pi]$, formed by functions which are integrable according to Lebesgue on the interval $[-\pi,\pi$]. $L^2$ is also an Hilbert space, i.e. a real or complex space endowed with an inner product, that is also a complete metric space with respect to the distance function induced by the inner product. For a more comprehensive discussion about Hilbert spaces and their relation to Fourier analysis, see (CHE COSA???).\\Given the sequence $e^{ikx}$, where $i$ is immaginary unit and $k\in\mathbb{Z}$, on the interval $[-\pi,\pi]$, it is orthogonal on $L^2[-\pi,\pi]$ (Barozzi, 1992). This sequence generates a subspace of $L^2$ composed by the functions:
+\begin{equation}
+p_n(x)=\sum_{k=-n}^{n}c_k e^{ikx}
+\end{equation}
+Elements of such subspace are called \textit{trigonometric polynomials}, expressed as complex numbers. The same polynomial of the previously defined subspace, written in real values, will be:
+\begin{equation}
+p_n(x)=\frac{a_0}{2}+\sum_{k=1}^{n}[a_k \cos(kx)+b_k \sin(kx)]
+\end{equation}
+since, for every $k$ from 1 to $n$ it stands:
+\begin{equation}
+\frac{e^{ikx}+e^{-ikx}}{2}=\cos(kx), \quad \frac{e^{ikx}-e^{-ikx}}{2i}=\sin(kx).
+\end{equation}
+Thus it is possible to write:
+\begin{equation}
+\sum_{k=-n}^{n}c_k e^{ikx}=\frac{a_0}{2}+\sum_{k=1}^{n}[a_k \cos(kx)+b_k \sin(kx)],
+\end{equation}
+from where it is possible to derive the equations for the coefficients $a,b$ and $c$ as follows:
+\begin{equation}
+a_k=c_k+c_{-k}, \quad b_k=i(c_k-c_{-k})
+\end{equation}
+and:
+\begin{equation}
+c_0=\frac{a_0}{2}, \quad c_k=\frac{1}{2}(a_k-ib_k), \quad c_{-k}=\frac{1}{2}(a_k+ib_k).
+\end{equation}
+For the effective derivation of the coefficients, see (PRESLEY?????). We have now defined the polynomial $p_n$ either in the complex form and the real form.\\
+Considering a periodic function $f(t)$, suppose we now want to approximate it by means of an infinite linear combination of sinusoidal functions, which are the trigonometric (or Fourier) polynomials we defined above. The best approximation for $f(t)$ will be given by:
+\begin{equation}
+s_n(x)=\frac{a_0}{2} + \sum \limits_{n=1}^{\infty}(a_k \cos(kx)+b_k \sin(n kx)).
+\end{equation}
+We say that the right-side in (2) is the Fourier series, where $a_k$ and $b_k$ are real numbers, called coefficients, and $a_0$ is the constant term. The term corresponding to $k=1$ will be the fundamental harmonic. It means that it represents a sine/cosine wave with a period that mathces the one of the function $f(x)$. The following one, for $k=2$, will be the first harmonic, a sine/cosine wave with period equal to the half of the period of $f(x)$, and so on.\\As the approximation is valid, thus:
+\begin{equation}
+f(s) \sim \frac{a_0}{2} + \sum \limits_{n=1}^{\infty}(a_k \cos(kx)+b_k \sin(n kx))
+\end{equation}
+or, in complex form,
+\begin{equation}
+f(s) \sim \sum_{k=-\infty}^{\infty}c_k e^{ikx}.
+\end{equation}
+It will not be proved in here that every waveform can be approximated through the Fourier polynomials defined in (???). It is also important to realize if the series $s_n$ converges to the function $f(x)$ in a pointwise sense. Check Barozzi (1992) about the convergence of the Fourier series.\\Let's consider now the case of a real valued non-periodic function $y(t)$. Since it is not periodic, we cannot write it in a Fourier series form. It is possible to deal with it by treating the function as a periodic function with infinite period. Furthermore, increasing the length of the period, the distance between the frequencies of the summation of the Fourier series becomes smaller and smaller. So that, in limit, summation becomes an integral. In the $L^2[0,P]$ space, equation (11) then becomes:
+\begin{equation}
+y(t)=\int_{-\infty}^{\infty}(g(\omega)\cos(\omega t)+ k(\omega)\sin(\omega t))d\omega
+\end{equation}
+were $g$ and $k$ are functions which forms can be derived from $f(x)$, and $\omega=2\pi/P$ (it means that now we write the function in terms of angular frequency. Bearing in mind the relation between trigonometric functions and complex exponential:
+\begin{equation}
+\cos(\omega t)+i \sin(\omega t) \equiv e^{i\omega t}
+\end{equation}
+we thus may write the forumla known as Fourier integral representation of $y(t)$:
+\begin{equation}
+y(t)=\frac{1}{2\pi}\int_{-\infty}^{\infty} Y(\omega)e^{i\omega t} d\omega
+\end{equation}
+We say that $Y(\omega)$, defined as:
+\begin{equation}
+Y(\omega)\equiv \mathcal{F}(y)=\int_{-\infty}^{\infty} y(t)e^{-i\omega t} dt
+\end{equation}
+is the Fourier transform. It is a complex valued function, defined by:
+\begin{equation}
+Y(\omega) = \left\{ \begin{array}{rcl}
+{{g(\omega)-ik(\omega)}} & \mbox{for}
+& \omega>0 \\ g(0) & \mbox{for} & \omega=0 \\
+{{g(|\omega|)+ik(|\omega|)}} & \mbox{for} & \omega<0
+\end{array}\right.
+\end{equation}
+When speaking about Fourier transform, it is implied that we speak about these two formulas: the inverse Fourier transform (equation 15), and the proper Fourier transform (equation 16). It is important to point out that the two integrals of the pair of functions exist. A sufficient condition for this is that the function $f(t)$ be absolutely integrable on $[-\infty,\infty]$, that is:
+\begin{equation}
+\int_{-\infty}^{\infty}|f(t)|dt<\infty.
+\end{equation}
+Generally speaking, a transform is a linear operator of a space of functions on another space of functions. This operator is usually applied to a function in order to semplify operations. Indeed, it could be easier to transform a function from the time domain to the frequancy domain, to carry out the needed operations which are easier to calculate in the frequency domain, and then inverse transform the results back in the time domain, thanks to the inverse Fourier transform. Fourier transform is an integral transform. An integral transform $T(f)$ of a function $f(t)$ is:
+\begin{equation}
+T(f)(s)=\int_{a}^{b}K(s,t)f(t)dt
+\end{equation}
+where $K(s,t)$ is known as the Kernel of the transform.
+\\The Fourier transform enjoys some useful properties. We will enumerate some of them, particularly the ones useful for time series spectral analysis. One of these properties is that FT is a linear operation, and therefore so is the inverse formula. Linearity implies that the transform of the sum of two functions $y(t)$ and $z(t)$ is the sum of their Fourier transform, and also that if the same two functions have the Fourier transform, any of their linear combination is transformable by means of Fourier:
+\begin{equation}
+\mathcal{F}(ay+bz)=a\mathcal{F}(y)+b\mathcal{F}(z)
+\end{equation}
+where $a$ and $b$ can be any constant.\\Furthermore, FT has an interesting behavior regarding the convolution. Regarding this operation, the frequency domain shows a simplier calculus compared to the same carried out in the time domain. Convolution is a mathematical operation between two functions, which output is third function. More precisely, it is defined as the integral of the multiplication of two functions, one shifted by some $\tau$. Given two functions, $y$ and $z$, of $t$, their convolution $h(t)$ is given by:
+\begin{align*}
+h(t)=(f\ast z)(t)=\int_{-\infty}^{\infty}f(\tau)z(t-\tau)d\tau \\= \int_{-\infty}^{\infty}f(t-\tau)z(\tau)d\tau
+\end{align*}
+It can be seen as a weighted average of $f(\tau)$ at time $t$. More precisely, a discrete convolution of two functions is defined as:
+\begin{equation}
+(y*z)(n)=\sum_{m=-\infty}^{\infty}y(m)z(n-m)=\sum_{m=-\infty}^{\infty}y(n-m)z(m)
+\end{equation}
+This clearly recalls what is known as filtering a regularly sampled time series in the time domain, which is:
+\begin{equation}
+\tilde{y_t}=\sum_{k=-m}^{n}w_k y_{t+k}
+\end{equation}
+where the weights $w_k$ are the filters factors.\\Thanks to the convolution property of the Fourier transform, filtering in the time domain corresponds to a particularly simple operation in the frequency domain. If $y$ and $z$ are integrable functions, with $\mathcal{F}(y)$ and $\mathcal{F}(z)$ as respective Fourier transforms, then the Fourier transform of the convolution is the product of $\mathcal{F}(y)$ with  $\mathcal{F}(z)$:
+\begin{equation}
+\mathcal{H}(t???)=\mathcal{F}(y\ast z)=\mathcal{F}(y)\mathcal{F}(z)
+\end{equation}
+It means that the Fourier transform of th filtered series can be calculated as the product of the Fourier transform of the original time series and the Fourier transform of the filter function $w$.
+\begin{equation}
+\mathcal{F}(\tilde{y})=\mathcal{F}(y\ast w)=\mathcal{F}(y)\mathcal{F}(w)
+\end{equation}
+Multiplication is a much more straightforward operation than calculating the above running averages of (12), and in the frequency domain it is also more straightforward to see the effect of a filter on a signal with a particular frequency or period.
+\subsection{Discrete Fourier Transform}
+In signal processing there is the need to process a continuous signal by discrete methods, since processing systems work with finite sums only (Bracewell, 1965). Discrete Fourier transform (DFT) is a widely known tool used for turning a signal from continuous to discrete. Its functioning is ensured by the Nyquist-Shannon sampling theorem, which will not be explained in here. For a deeper discussion of the theorem, see Press et al 1992.  In order to accomplish in this aim, there are some approximations to deal with. For instance, the analyzed signal has to be time-limited, i.e. the sample has to have a finite number of observations. \\ Time series analysis usually regards these kind of signals, i.e. data of finite-length known at discretely regularly spaced times $t$. Such a time series can be represented without loss of informations by its discretely sampled Fourier transform. Given a time series, i.e. a function of time $y(t)$, DFT is defined as:
+\begin{equation}
+\mathcal{F}(y)=\sum_{t}e^{i\omega t}y(t)
+\end{equation}
+Since there are particularly efficient algorithms (for instance, the Fast Fourier transform, or FFT) for computing discrete Fourier transform if the number of samples is exactly a power of 2, normally time series are truncated to an appropriate length or padded out symmetrically with appropriate average values in order to get the number of samples which satisfies this criterion. A useful reference for FFT implementations and their properties is (Press et al, 1992).\\Of particular importance when carrying out DFT is a limitation that is imposed by the samplic cadence, which is the time interval between consecutive observations, denoted by $\Delta$. The reciprocal of $\Delta$ is the sampling rate, or sampling frequency. It means that if $\Delta$ is measured in seconds, the sampling frequency is the average of samples obtained per second. With a finite cadence of sampling with time interval $\Delta$, the mentioned limitation is that it is impossible to detect any signal with a frequency that is higher, in absolute value, than the Nyquist frequency. The latter is:
+\begin{equation}
+\omega_{Nyq}=\frac{\pi}{\Delta}
+\end{equation}
+The Nyquist frequency is related to the total length of the considered period T in the following manner:
+\begin{equation}
+T=N\Delta, \quad \Delta=\frac{T}{N}, \quad \text{and so:} \quad \omega_{Nyq}=\frac{\pi N}{T}
+\end{equation}
+where N is the number of observations. If, for example, a standard FFT is applied on a time series, the sampling points are uniformly spaced over the frequency interval $[0,\omega_{Nyq}]$. Consequentely, every signal with a frequency higher than $\omega_{Nyq}$ is indistingishable from a lower-frequency signal, and it ``appears'' with much lower frequency. This phenomenon is known as \textit{aliasing}, and when it happens it is said that the signal is \textit{aliased} (falsly translated) in the frequency range $[0,\omega_{Nyq}]$. Sometimes, functions with frequencies higher than the $\omega_{Nyq}$ are filtered to reduce these values, with a so called \textit{anti-aliasing filter} or \textit{lowpass filter}\\
+PROOF?????
+\section{Designing an improved filter}
+Determining the effect that a particular set of weights has in the frequency domain is useful to design a set of weights that is in some sense optimal. In practical operations, such as those performed by eg. Statistics Netherlands, the intention  is to regularly publish or update seasonal adjusted time series and perhaps also the time series of seasonal factor. In this case it may be useful to apply a moving average in the time domain, rather than Fourier transforming the entire time series, carrying out the multiplication in the frequency domain and subsequently inverse transforming again. Useful discussions of the spectral analysis of time domain filters can be found for instance in (GRE1970),(SHUEAL2011) and (FINLEY2006). \\In designing the weights it is advisable to have the total extent of non-zero values \textit{w} as limited as feasible, ie. to make \textit{m} and \textit{n} in equation (7) as small as possible.
+\begin{equation}
+w_k \equiv 0 \quad \forall |k| > max(m,n).
+\end{equation}
+The reason for this is that when updating the published seasonal adjusted time series, only the most recent samples need to be flagged as provisional, whereas further back beyond the $m^{th}$ sampled point in the past the seasonal adjusted series can be considered final, because by design it can no longer change in any regular update.\\A separate desirable feature is for the Fourier transform of \textit{w} to have zero imaginary part, $\mathfrak{F}(W) = 0$, so that the phase of periodic signals is unaffected by the filtering operation. For the Fourier transform of \textit{w} to be entirely real, the weights \textit{w} need to be symmetric around 0. For this reason the design will focus on symmetric weights for which:
+\begin{equation}
+w_{-k} = w_k
+\end{equation}
+Another requirement is that the long-term average of the seasonal component has to be equal to 0. Translated to the frequency domain, it means that the value of the Fourier transform of the seasonal component at $\omega=0$ must be equal to 0. The Fourier transform of the original time series can have any value, so by making use of equation (8) it can be seen that this requirement can be met if the Fourier transform $W(\omega)$ of the weights for isolating the seasonal component is equal to 0 at $\omega=0$.  Translating the requirement $W(0)=0$ back to the time domain yields the simple constraint that:
+\begin{equation}
+\sum \limits_{k=-n}^n w_k \equiv 0
+\end{equation}
+If the weights \textit{w} are designed to determine the seasonal component, the \textit{trend+cycle+noise} series can be obtained by subtracting the seasonal component from the original time series. This is the case of the set of filter weights proposed  here. The linearity property (4) ensures that such additions and subtractions in the time domain are treated identically in the frequency domain. If one has a filter W($\omega$) in the frequency domain which is designed to extract seasonal movements from a time series, then the filter 1 - W produces a time series with just the \textit{trend+cycle+noise}. This implies that there is an additional desirable property or (soft) constraint for the values $W_k$ in the frequency domain which is that:
+\begin{equation}
+-\epsilon < W_k < 1+\delta
+\end{equation}
+in which $\epsilon$ and $\delta$ are as small as feasible given the other constraints. While ideally $\epsilon=0$ and $\delta=0$, in practice with a finite set of filter weights \textit{w} satisfying (9), this may not be achievable. This implies that if the dynamic range of the original time series is very high (ie. the height $h_f$ of a peak in the Fourier transform of the time series is very large) there may still be undesirable remaining seasonal signal in the filtered time series, because $\delta h_f$ and/or $\epsilon h_f$ are not sufficiently small.\\The standard filtering procedures involved in TRAMO/SEATS and X-13-ARIMA imply an assumption or idealisation that the seasonal movements in a time series are perfectly periodic and repeat identically from one year to the next. If this were indeed the case, then it would be perfectly adequate to design weights that eliminate signal at very specific frequencies that are integer values in the units of cycle/years. The weights of this standard approach, when Fourier transformed, produce the graph shown in Figure \ref{fig:filters} (dashed line). It clearly shows notches precisely at integer multiples of 1 cycle/year, broadened because of the finite resolution of the sampling in the frequency domain.\\
+The problem with standard filtering is that signal that is not precisely at these frequencies but in-between, is not included in the seasonal effect. For a real time series this genuinely causes issues because in practice also the ``envelope'' of the seasonal effect is subject to long term changes. The seasonal pattern may qualitatively be very similar from year to year but most often it will not be completely identical from one year to the next: eg. the amplitude may be well modulated by effects similar to those that determine long-term trends or economic cycles. Such long term effects on seasonal patterns have a signature in the frequency domain: strong peaks at integer multiples of one cycle/year will be substantially broadened, and therefore produce signals at frequencies where the filter corresponding to the naive design of the standard procedures will not include them in the seasonal component and, therefore, also not extract them from the \textit{trend+cycle+noise} series.\\For this reason it is more suitable for real time series to design a filter that ``removes'' all signal in a band between frequencies of around one cycle/year, ie. between $\sim$ 1/12 cycle/month, and $\sim$ 5/12 cycles/month. In the context of smoothing a monthly input, the frequency domain $\Omega=(0<\frac {\omega}{2\pi}<0.5)$ can be portioned in two main intervals: (1) $\Omega=(0 \leq \frac {\omega}{2\pi} \leq 0.06)$ associated with cycles of 16 months or longer attributed to the signal (trend/cycle) of the series and (2) $\bar{\Omega}=(0.06 < \frac {\omega}{2\pi} < 0.5)$ (the signal of higher frequencies up to the Nyquist frequency) corresponding to short cyclical fluctuations and the noise. It is in particular for the signal in this range that the full strength of the auto-regressive modelling offered, for instance, by X-13-ARIMA can be employed to further characterise the time series for in-depth analysis. Figure \ref{fig:filters} shows an example of what can be achieved in terms of a filter designed to separate out signal in a band of frequencies between $\sim$ 1/12 cycle/month and $\sim$ 5/12 cycles/month. Evidently this is not completely unique, in the sense that slight variations in this frequency response that are visually un-noticable, would have some effects on the weights \textit{w}. 
+\begin{figure}[h]
+ \includegraphics[width=\linewidth]{../images/filters.pdf}
+ \caption{The band-pass filter designed for seasonal adjustment. Dashed line indicates the standard filtering. Vertical dashed line indicates integer multiples of 1 cycle/year.}
+ \label{fig:filters}
+\end{figure}
+The weights $w_k$ that correspond to this filter of Figure \ref{fig:filters} are shown to 7 digits precision in Table \ref{tab:digits}. The weights \textit{w$_k$} for all the odd values of \textit{k} are identically equal to 0, as are the weights for $ k>18$. This set of weights satisfies the various constraints mentioned in this section. The additional property that the weights are zero for all odd values of\textit{ k} produces an additional advantage: the high frequency section of the spectrum can be determined in a very simple second step, which is evidently statistically independent. If $\tilde y$ is the time series from which the seasonal component has been removed with the above filter, then the high frequency component \textit{h} is obtained by taking:
+\begin{equation}
+h_i = (2 \tilde{y_i} - \tilde{y_i} - \tilde{y}_{i+1})/4
+\end{equation}
+Whereas the \textit{trend+cycle} time series \textit{c} (without high frequency contributions) is obtained from:
+\begin{equation}
+c_i = (2\tilde{y_i}+\tilde{y_i}+\tilde{y}_{i+1})/4
+\end{equation}
+With the weights of Table \ref{tab:digits} it is clear that after 18 months any seasonal adjusted time series $\tilde y$ will not change, when using this filter alone.\\
+\bigskip
+\begin{table}[h]
+\captionof{table}{Filter weights for a band-pass filter designed to extract seasonal behaviour from a time series.}
+\label{tab:digits}
+\centering
+\begin{tabular}{r r}
+k & $w_k=w_{-k}$\\
+\hline
+0 & 0,7358026\\
+2 & -0,2219532\\
+4 & -0,1504270\\
+6 & -0,0659661\\
+8 & 0\\
+10 & 0,0309203\\
+12 & 0,0302373\\
+14 & 0,0143577\\
+16 & 0\\
+18 & -0,0050703\\
+\hline
+\end{tabular}
+\end{table}
+Given that applying this filter to any given time series is as straightforward as the more standard filtering steps (such as applying Henderson filter for smoothing a time series) there is no fundamental difficulty in incorporating this weight system in the standard packages that are currently widely available. By doing this, for instance, with the X-13-ARIMA package, all the other tools that this package offers are still available.
+\begin{figure}[h]
+\includegraphics[width=\linewidth]{../images//henderson_designed_ma.jpeg}
+\caption{Time-domain representation of different filters. Black line is the designed filter, ranging in a [-18:18] terms width; red line indicates the Henderson 13-terms filter and blue line indicates the 13-terms seasonal moving average filter.}
+\label{fig:henderson_designed_ma}
+\end{figure}
+A possible alternative is to pre-process time series with this filter, and this is exactly the procedure proposed in this paper. There is no loss of information in this pre-processing step since the seasonal factor and the \textit{trend+cycle+noise} series are both available and their sum is identical to the original time series. The time series filtered with the proposed weight system can then be provided as input for the standard packages (in this case, those available in JDemetra+), in order to be able to use the extensive toolset of those packages for a more detailed analyses of the character and causality of the seasonal factor.\\
+Figure \ref{fig:henderson_designed_ma} plots the two mentioned set of filters represented in the time domain, comparing them with the function of the designed one.
+\section{Gain function and Phase Shift function}
+Harmonic analysis is useful to understand and evaluate the effects of a linear filter on a time series. More precisely, the FT of a smoother gives us information about the effect of the filter on a arbitrary input series. Two elements which are useful in this aim are the gain function and phase shift function. \\Since every stationary series can be approximated by a finite linear combination of sinusoidal functions, let's simulate now a filtering process on a simple trigonometric function, such as:
+\begin{equation}
+y(t)=e^{-i\omega t}=\cos(\omega t)-i\sin(\omega t).
+\end{equation}
+In order to get the smoothed estimate,  we apply now a set of filters $w_j$, $j=-n,.....,n$ as follows:
+\begin{align}
+\tilde{y}(t)=\sum_{k=-n}^{n}w_k y_{t+k}=\\
+=\sum_{k=-n}^{n} w_k e^{-i\omega (t+k)}=\\
+=\sum_{k=-n}^{n} w_k e^{-i\omega t} e^{-i\omega k}=\\
+=H(\omega)e^{-i\omega k}= H(\omega) y(t).
+\end{align}
+$H(\omega)$ is then the Fourier transform of the filters factors, called the frequency response function:
+\begin{equation}
+H(\omega)=\sum_{k=-n}^{n}w_k e^{-i\omega k},
+\end{equation}
+If we plot the () related to the designed set of filters, we get the representation of Fig. (). As we previously mentioned, Fourier transform of the $w'$s evaluates the effect detected in the input series after the filter application. In detail:
+\begin{align}
+H(\omega)=\sum_{k=-n}^{n} w_k e^{-i\omega k}=\\
+=\sum_{k=-n}^{n} w_k [\cos(i\omega k)-i\sin(i\omega k)]=\\
+=\sum_{k=-n}^{n} w_k \cos(i\omega k)-i\sum_{k=-n}^{n} w_k \sin(i\omega k)=
+\end{align}
+If we set $A(\omega)=\sum_{k=-n}{n}w_k\cos(i\omega k)$ and $B(\omega)=\sum_{k=-n}^{n}w_k\sin(i\omega k)$, we obtain:
+\begin{align}
+A(\omega)-i B(\omega) &=\\
+=\sqrt{A^2(\omega)+B^2(\omega)}[\cos\phi(\omega)-i\sin\phi(\omega)]=\\
+=G(\omega)e^{-i\phi(\omega)}.
+\end{align}
+We found the two functions we cited at the beginning of the section.
+\begin{gather}
+G(\omega)=\sqrt{A^2(\omega)+B^2(\omega)} \\
+\phi(\omega)=\arctan(\frac{A(\omega)}{B(\omega)})
+\end{gather}
+Respectively, (47) and (48) are known as Gain function of the filter and Phase shift function. The first tells us, with respect to the frequency $\omega$, how much the amplitude of the input is amplified or reduced, whereas the phase function keeps track of the changes that occur in the phase of the function.\\For symmetric filters, the gain function is defined as the absolute value of the transfer function $H(\omega)$:
+\begin{equation}
+G(\omega)=|H(\omega)|.
+\end{equation}
+Its power is known as the squared gain function. If we refer to the filter, then the squared gain function indicates which frequency components are suppressed or amplified by the filtering operation, i.e. it measures the changes on the total variance of the input series (at different frequencies), as the filter is applied. If in a frequency band the squared gain of a filter has value zero, then that filter passes no movement from this range of frequencies to the output series. On the other hand, when its value at some frequencies is equal to one, all the movement from that range is delivered to the component estimator. It means that the squared gain of an optimal seasonal component estimator filter should have unitary values at seasonal frequencies and zero in between those frequencies. On the contrary, for the seasonally adjusted series filter, this function should have values equal to zero at those same frequencies. A thorough explanation of the interpreation of gain function and phase function, as the values of the parameters of ARIMA model and the length of the series change, is offered by Findley, Martin, 2006.\\An interesting feature of the squared gain function is that it relates the spectral density $h_y(\omega)$ and $h_{\tilde{y}}(\omega)$ of the input and the output in the following way:
+\begin{equation}
+h_{\tilde{y}}(\omega)=|G(\omega)|^2h_y(\omega),
+\end{equation}
+bearing in mind that the power spectra of a process is the Fourier transform of its autocovariance function. How the power spectra and autocovariance function are related can be examined in (Presley AAAA).
+\section{Periodogram}
+Time series, regardless of the phenomenon that they represent, are generally presented in the time domain. Another interesting view of the same series is in the frequency domain, considering that any stationary time series can be expressed as a combination of sinusoidal functions, thanks to the Fourier transform. The frequency domain tool used by time series analysts is called spectrum, and its representation is called periodogram. It is possible to obtain it as follows:
+\begin{equation}
+y_t = \sum\limits_{i=1}^{\frac{n}{2}}[\beta_{1_{i}}\cos(2\pi\omega_{i}t) + \beta_{2_{i}}\sin(2\pi\omega_{i}t)]
+\end{equation}
+The $\beta$'s work as regression parameters, obtained from: $\beta_{1_{i}}=A_{i} \cos(\psi_{i})$ and $\beta_{2_{i}}=-A \sin(\psi_{i})$, where $\psi$ is called the phase; it determines the starting point (in degrees) for the cosine wave. A is the amplitude.
+\\The spectral analysis investigates the frequency domain representation of the series to determine how important cycles of different frequencies are in accounting for the behaviour of \textit{y$_t$}. Therefore, the periodogram is useful to identify the dominant cycles of a time series. Peaks in a periodogram indicate frequencies of cyclical movements with a certain periodicity. The periodicity \textit{P} of a phenomenon is related to its frequency $\omega$: $P=2 \pi / \omega$. It means that for a monthly series, seasonal frequencies are $\pi/6$, $\pi/3$, $\pi/2$, $2\pi/3$, $5\pi/6$ and $\pi$, and they correspond to 1, 2, 3, 4, 5 and 6 cycles per year (for quarterly sampled series, the two seasonal frequencies are $\pi/2$; one cycle per year, and $\pi$; two cycles per year).\\The trading day frequency is 0.348, since a daily component which repeats every seven days goes through 4.348 cycles in a month of average length 30.4375 days. It means, then, that 0.348 is the trading days frequency for monthly sampled time series, considering the average length of a year (365.25 days). Actually, the original trading days frequency (4.348) is higher than the Nyquist frequency. If any signal has a frequency higher than the $\omega_{N_{yq}}$, it is an aliasing signal, i.e. it is indistinguishable from a lower-frequency signal. When this happens, the signal “appears” with much lower $\omega$. Consequently, $\omega=4.348$ appears as 0.348.\\A time series with a strong seasonal component should have peaks at the seasonal frequencies, while a seasonally adjusted time series should have no peaks at those frequencies. Moreover, the presence of the trend component is always evidenced by a peak at frequency zero and so, when a periodogram has high values at low frequencies, i.e. at $(0 \leq \omega \leq 0.06)$ , it means that the long-term component (the trend) is dominating the series. On the contrary, if high values of the periodogram concentrate more at high frequencies, the time series is rather trendless and has a significant irregular component.\\JDemetra+ contains different spectral diagnostics. First, it is possibile to obtain a spectral plot of the raw time series, obtained (by default) after the performance of a first difference operation on the time series, to get the data stationary. Indeed, non-stationarity of a series could lead to a misinterpretation of the periodogram.  One other issue is related to the presence of outliers, since they can influence the outcome of the periodogram as well. This is why a pre-transformation of data is advisable, as done by both TRAMO/SEATS and X-13-ARIMA.  As is visible from figure 3, in JDemetra+ the seasonal frequencies are marked as grey vertical lines, while the bordeaux lines represents the trading day frequency.\\
+\begin{figure}[h!]
+\includegraphics[width=\linewidth]{../images/raw_periodogram.jpg}
+\centering
+{\textbf{\scriptsize Figure 4: JDemetra+ representation of a periodogram}}
+\end{figure}
+\\In addition to the ‘raw’ periodogram, once the seasonal adjustment procedure has been carried out, JDemetra+ offers some spectral diagnostics. Especially, it is possible to obtain periodograms of the seasonally adjusted series, residuals and irregular component. Further details will be given in the next chapter.
+\end{document}.
+
